@@ -15,6 +15,29 @@ import CoreGraphics
 
 open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, IBarChartDataSet
 {
+    private var _gradientColorSet: [[NSUIColor]]?
+
+    private var monitor = os_unfair_lock_s()
+    open var gradientColorSet: [[NSUIColor]]? {
+        get {
+            if #available(iOS 10.0, *) {
+                os_unfair_lock_lock(&monitor)
+                defer { os_unfair_lock_unlock(&monitor) }
+                return _gradientColorSet
+            }
+            return _gradientColorSet
+        }
+        set {
+            if #available(iOS 10.0, *) {
+                os_unfair_lock_lock(&monitor)
+                defer { os_unfair_lock_unlock(&monitor) }
+                _gradientColorSet = newValue
+                return
+            }
+            _gradientColorSet = newValue
+        }
+    }
+
     private func initialize()
     {
         self.highlightColor = NSUIColor.black
@@ -148,6 +171,8 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, IBarChartDat
 
     /// the alpha value (transparency) that is used for drawing the highlight indicator bar. min = 0.0 (fully transparent), max = 1.0 (fully opaque)
     open var highlightAlpha = CGFloat(120.0 / 255.0)
+
+    open var roundedTop: Bool = false
     
     // MARK: - NSCopying
     
@@ -163,5 +188,13 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, IBarChartDat
         copy.barBorderColor = barBorderColor
         copy.highlightAlpha = highlightAlpha
         return copy
+    }
+
+    open func gradientColors(at index: Int) -> [NSUIColor]?
+    {
+        guard let colors = gradientColorSet else {
+            return nil
+        }
+        return colors[index % colors.count]
     }
 }

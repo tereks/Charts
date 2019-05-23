@@ -39,4 +39,10 @@ public protocol IBarChartDataSet: IBarLineScatterCandleBubbleChartDataSet
     
     /// array of labels used to describe the different values of the stacked bars
     var stackLabels: [String] { get set }
+
+    var roundedTop: Bool { get set }
+
+    var gradientColorSet: [[NSUIColor]]? { get set }
+    
+    func gradientColors(at index: Int) -> [NSUIColor]?
 }
