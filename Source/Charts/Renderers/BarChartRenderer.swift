@@ -453,7 +453,6 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
 
         if let gradientColor = dataSet.gradientColors(at: index)
         {
-            print("ep[rto[wpeor[epwro")
             drawGradient(context: context,
                          barRect: barRect,
                          gradientColors: gradientColor)
@@ -476,7 +475,11 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
 
         let startPoint = CGPoint(x: barRect.midX, y: barRect.minY)
         let endPoint = CGPoint(x: barRect.midX, y: barRect.maxY)
-        let path = UIBezierPath(roundedRect: barRect, cornerRadius: barRect.size.width / 2).cgPath
+
+        let radius = barRect.size.width / 2
+        let path = UIBezierPath(roundedRect: barRect,
+                                byRoundingCorners: [.topLeft, .topRight],
+                                cornerRadii: CGSize(width: radius, height: radius)).cgPath
 
         context.addPath(path)
         context.clip()
